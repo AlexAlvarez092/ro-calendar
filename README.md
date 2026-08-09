@@ -94,12 +94,12 @@ The URL should remain stable across seasons.
 
 ## Project documentation
 
-- `PRD.md` — product requirements
-- `ARCHITECTURE.md` — architecture and system design
-- `TECHNICAL_SPEC.md` — implementation details
-- `DATA_SOURCE.md` — LALIGA API discovery and assumptions
-- `COPILOT_INSTRUCTIONS.md` — implementation guidance for GitHub Copilot
-- `DECISIONS.md` — agreed decisions
+- `docs/PRD.md` — product requirements
+- `docs/ARCHITECTURE.md` — architecture and system design
+- `docs/TECHNICAL_SPEC.md` — implementation details
+- `docs/DATA_SOURCE.md` — LALIGA API discovery and assumptions
+- `.github/copilot-instructions.md` — implementation guidance for GitHub Copilot
+- `docs/DECISIONS.md` — agreed decisions
 
 ## Important dependency
 
