@@ -40,6 +40,20 @@ team: Real Oviedo
 
 ## Match endpoint behaviour
 
+Based on browser network captures, the site uses these endpoint patterns:
+
+```text
+GET https://apim.laliga.com/public-service/api/v1/subscriptions/{competitionSlug}/gameweeks?contentLanguage=es&subscription-key={key}
+GET https://apim.laliga.com/webview/api/web/subscriptions/{competitionSlug}/week/{week}/matches?contentLanguage=es&subscription-key={key}
+```
+
+Notes:
+
+- `competitionSlug` for MVP: `laliga-hypermotion-2026`
+- `week` comes from the gameweeks response and should not be hard-coded.
+- The key appears both as query parameter (`subscription-key`) and request header (`Ocp-Apim-Subscription-Key`) in browser traffic.
+- Never store or log the real key.
+
 The discovered match response has a top-level:
 
 ```json
