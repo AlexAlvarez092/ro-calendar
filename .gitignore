@@ -4,6 +4,7 @@ node_modules/
 # Build outputs
 dist/
 coverage/
+public/calendar.ics
 
 # Local environment files (never commit secrets)
 .env
