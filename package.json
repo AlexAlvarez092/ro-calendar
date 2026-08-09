@@ -1,0 +1,38 @@
+{
+  "name": "ro-calendar",
+  "version": "0.1.0",
+  "description": "A free, automatically updated ICS calendar for Real Oviedo fixtures from LALIGA HYPERMOTION.",
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.json",
+    "generate": "tsx src/index.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexAlvarez092/ro-calendar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AlexAlvarez092/ro-calendar/issues"
+  },
+  "homepage": "https://github.com/AlexAlvarez092/ro-calendar#readme",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "ical-generator": "^11.1.0",
+    "luxon": "^3.7.2",
+    "node-ical": "^0.27.1"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.7.4",
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.11",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}
