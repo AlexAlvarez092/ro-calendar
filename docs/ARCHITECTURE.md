@@ -84,17 +84,19 @@ real-oviedo-calendar/
 │   ├── ics-generator.test.ts
 │   └── pipeline.test.ts
 ├── .github/
-│   └── workflows/
-│       └── update-calendar.yml
+│   ├── workflows/
+│   │   └── update-calendar.yml
+│   └── copilot-instructions.md
 ├── package.json
 ├── tsconfig.json
 ├── README.md
-├── PRD.md
-├── ARCHITECTURE.md
-├── TECHNICAL_SPEC.md
-├── COPILOT_INSTRUCTIONS.md
-├── DATA_SOURCE.md
-└── DECISIONS.md
+├── docs/
+│   ├── PRD.md
+│   ├── ARCHITECTURE.md
+│   ├── TECHNICAL_SPEC.md
+│   ├── DATA_SOURCE.md
+│   └── DECISIONS.md
+└── ...
 ```
 
 The exact file split may be simplified during implementation if Copilot finds a cleaner equivalent. Behavioural requirements take precedence over this layout.
@@ -152,6 +154,7 @@ Configuration should contain at least:
 ```json
 {
   "competition": "laliga-hypermotion-2026",
+  "season": "2026/27",
   "competitionSubscriptionId": 396,
   "team": {
     "id": 157,
