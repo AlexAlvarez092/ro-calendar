@@ -1,13 +1,31 @@
-import type { AppConfig } from "../config/config.js";
+import type { ApiCredentials, AppConfig } from "../config/config.js";
 import type {
   RawLaligaMatch,
   RawLaligaMatchesResponse,
 } from "./laliga-types.js";
 
-const GAMEWEEKS_BASE_URL = "https://apim.laliga.com/public-service/api/v1";
-const MATCHES_BASE_URL = "https://apim.laliga.com/webview/api/web";
+const DEFAULT_BACKEND_BASE_URL = "https://apim.laliga.com/public-service";
+const DEFAULT_WEBVIEW_BASE_URL = "https://apim.laliga.com/webview";
+const RUNTIME_CONFIG_SOURCE_URLS = [
+  "https://www.laliga.com/",
+  "https://www.laliga.com/resultados",
+];
 
 export type FetchLike = typeof fetch;
+
+interface ResolvedApiCredentials {
+  backendApiKey: string;
+  webviewApiKey: string;
+  backendBaseUrl: string;
+  webviewBaseUrl: string;
+}
+
+interface RuntimeApiConfig {
+  backendUrl: string;
+  backendSubscription: string;
+  webviewUrl: string;
+  webviewSubscription: string;
+}
 
 interface ClientOptions {
   fetchImpl?: FetchLike;
@@ -22,9 +40,32 @@ export class LaligaClient {
 
   async collectMatches(
     config: AppConfig,
-    apiKey: string,
+    credentials: ApiCredentials = {},
   ): Promise<RawLaligaMatch[]> {
-    const weeks = await this.fetchGameweeks(config.competition, apiKey);
+    const resolved = await this.resolveCredentials(credentials);
+
+    try {
+      return await this.collectMatchesWithResolved(config, resolved);
+    } catch (error) {
+      if (!isUnauthorized(error) || !credentials.sharedApiKey) {
+        throw error;
+      }
+
+      const fallback = await this.resolveCredentials({});
+      return this.collectMatchesWithResolved(config, fallback);
+    }
+  }
+
+  private async collectMatchesWithResolved(
+    config: AppConfig,
+    resolved: ResolvedApiCredentials,
+  ): Promise<RawLaligaMatch[]> {
+
+    const weeks = await this.fetchGameweeks(
+      config.competition,
+      resolved.backendApiKey,
+      resolved.backendBaseUrl,
+    );
 
     const allMatches: RawLaligaMatch[] = [];
 
@@ -32,7 +73,8 @@ export class LaligaClient {
       const weekMatches = await this.fetchMatchesByWeek(
         config.competition,
         week,
-        apiKey,
+        resolved.webviewApiKey,
+        resolved.webviewBaseUrl,
       );
       allMatches.push(...weekMatches);
     }
@@ -43,9 +85,10 @@ export class LaligaClient {
   async fetchGameweeks(
     competitionSlug: string,
     apiKey: string,
+    backendBaseUrl = DEFAULT_BACKEND_BASE_URL,
   ): Promise<string[]> {
     const response = await this.fetchWithKey(
-      `${GAMEWEEKS_BASE_URL}/subscriptions/${competitionSlug}/gameweeks?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
+      `${backendBaseUrl}/api/v1/subscriptions/${competitionSlug}/gameweeks?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
       apiKey,
     );
 
@@ -63,9 +106,10 @@ export class LaligaClient {
     competitionSlug: string,
     week: string,
     apiKey: string,
+    webviewBaseUrl = DEFAULT_WEBVIEW_BASE_URL,
   ): Promise<RawLaligaMatch[]> {
     const response = await this.fetchWithKey(
-      `${MATCHES_BASE_URL}/subscriptions/${competitionSlug}/week/${encodeURIComponent(week)}/matches?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
+      `${webviewBaseUrl}/api/web/subscriptions/${competitionSlug}/week/${encodeURIComponent(week)}/matches?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
       apiKey,
     );
 
@@ -93,6 +137,97 @@ export class LaligaClient {
 
     return response;
   }
+
+  private async resolveCredentials(
+    credentials: ApiCredentials,
+  ): Promise<ResolvedApiCredentials> {
+    const backend = credentials.backendApiKey ?? credentials.sharedApiKey;
+    const webview = credentials.webviewApiKey ?? credentials.sharedApiKey;
+
+    if (backend && webview) {
+      return {
+        backendApiKey: backend,
+        webviewApiKey: webview,
+        backendBaseUrl: DEFAULT_BACKEND_BASE_URL,
+        webviewBaseUrl: DEFAULT_WEBVIEW_BASE_URL,
+      };
+    }
+
+    const discovered = await this.discoverRuntimeApiConfig();
+
+    return {
+      backendApiKey: credentials.backendApiKey ?? discovered.backendSubscription,
+      webviewApiKey: credentials.webviewApiKey ?? discovered.webviewSubscription,
+      backendBaseUrl: discovered.backendUrl || DEFAULT_BACKEND_BASE_URL,
+      webviewBaseUrl: discovered.webviewUrl || DEFAULT_WEBVIEW_BASE_URL,
+    };
+  }
+
+  private async discoverRuntimeApiConfig(): Promise<RuntimeApiConfig> {
+    for (const sourceUrl of RUNTIME_CONFIG_SOURCE_URLS) {
+      const response = await this.fetchImpl(sourceUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          Accept: "text/html,application/xhtml+xml",
+        },
+      });
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const html = await response.text();
+      const parsed = parseRuntimeApiConfig(html);
+
+      if (parsed) {
+        return parsed;
+      }
+    }
+
+    throw new Error("Unable to discover dynamic LALIGA API credentials.");
+  }
+}
+
+function parseRuntimeApiConfig(html: string): RuntimeApiConfig | null {
+  const backendUrl = extractOptional(html, /backendUrl":"([^"]+)"/);
+  const backendSubscription = extractOptional(
+    html,
+    /backendSubscription":"([a-z0-9]+)"/i,
+  );
+  const webviewUrl = extractOptional(html, /webviewUrl":"([^"]+)"/);
+  const webviewSubscription = extractOptional(
+    html,
+    /webviewSubscription":"([a-z0-9]+)"/i,
+  );
+
+  if (
+    !backendUrl ||
+    !backendSubscription ||
+    !webviewUrl ||
+    !webviewSubscription
+  ) {
+    return null;
+  }
+
+  return {
+    backendUrl,
+    backendSubscription,
+    webviewUrl,
+    webviewSubscription,
+  };
+}
+
+function extractOptional(input: string, pattern: RegExp): string | null {
+  const match = input.match(pattern);
+  return match?.[1] ?? null;
+}
+
+function isUnauthorized(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return /status 401/.test(error.message);
 }
 
 function extractWeeks(payload: unknown): string[] {

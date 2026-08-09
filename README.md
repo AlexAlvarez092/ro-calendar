@@ -54,17 +54,26 @@ Install:
 npm install
 ```
 
-Set the API key as an environment variable:
+Set API credentials as environment variables (optional):
 
 ```text
 LALIGA_API_KEY=...
+LALIGA_BACKEND_API_KEY=...
+LALIGA_WEBVIEW_API_KEY=...
 ```
+
+Notes:
+
+- `LALIGA_API_KEY` is a legacy/shared fallback.
+- `LALIGA_BACKEND_API_KEY` and `LALIGA_WEBVIEW_API_KEY` can be used when LALIGA uses different keys per endpoint.
+- If none are set, the generator attempts dynamic discovery from LALIGA runtime config.
+- If `LALIGA_API_KEY` is set but returns `401`, the generator retries with dynamic discovery.
 
 Recommended local setup:
 
 ```bash
 cp .env.example .env
-# then edit .env and set LALIGA_API_KEY
+# then edit .env and set optional key variables
 ```
 
 Run tests:
@@ -95,7 +104,7 @@ The generated `calendar.ics` is published through GitHub Pages.
 
 Required GitHub setup:
 
-1. Create a repository secret named `LALIGA_API_KEY`.
+1. Create repository secrets as needed (`LALIGA_API_KEY`, or `LALIGA_BACKEND_API_KEY` + `LALIGA_WEBVIEW_API_KEY`).
 2. Enable GitHub Pages for this repository (source: GitHub Actions).
 3. Ensure the workflow in `.github/workflows/update-calendar.yml` is enabled.
 

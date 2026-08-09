@@ -11,6 +11,12 @@ export interface AppConfig {
   timezone: string;
 }
 
+export interface ApiCredentials {
+  sharedApiKey?: string;
+  backendApiKey?: string;
+  webviewApiKey?: string;
+}
+
 export async function loadConfig(path: string): Promise<AppConfig> {
   const raw = await readFile(path, "utf-8");
   const parsed = JSON.parse(raw) as AppConfig;
@@ -26,12 +32,23 @@ export async function loadConfig(path: string): Promise<AppConfig> {
   return parsed;
 }
 
-export function readApiKey(): string {
-  const value = process.env.LALIGA_API_KEY;
+export function readApiCredentials(): ApiCredentials {
+  const legacy = clean(process.env.LALIGA_API_KEY);
+  const backend = clean(process.env.LALIGA_BACKEND_API_KEY);
+  const webview = clean(process.env.LALIGA_WEBVIEW_API_KEY);
 
+  return {
+    sharedApiKey: legacy,
+    backendApiKey: backend,
+    webviewApiKey: webview,
+  };
+}
+
+function clean(value: string | undefined): string | undefined {
   if (!value) {
-    throw new Error("LALIGA_API_KEY is required.");
+    return undefined;
   }
 
-  return value;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }

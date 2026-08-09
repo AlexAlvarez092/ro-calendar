@@ -3,8 +3,8 @@ import { existsSync } from "node:fs";
 import { dirname } from "node:path";
 import { LaligaClient } from "../api/laliga-client.js";
 import type { RawLaligaMatch } from "../api/laliga-types.js";
-import type { AppConfig } from "../config/config.js";
-import { loadConfig, readApiKey } from "../config/config.js";
+import type { ApiCredentials, AppConfig } from "../config/config.js";
+import { loadConfig, readApiCredentials } from "../config/config.js";
 import type { CalendarEvent } from "../domain/calendar-event.js";
 import type { Match } from "../domain/match.js";
 import { toCalendarEvent } from "../calendar/event-mapper.js";
@@ -18,7 +18,7 @@ import { validateCalendarIcs } from "../validation/calendar-validator.js";
 interface PipelineDependencies {
   collectMatches?: (
     config: AppConfig,
-    apiKey: string,
+    credentials: ApiCredentials,
   ) => Promise<RawLaligaMatch[]>;
   normalize?: (
     raw: RawLaligaMatch,
@@ -44,7 +44,7 @@ export async function generateCalendar(
   const dependencies = options.dependencies ?? {};
 
   const config = await loadConfig(configPath);
-  const apiKey = readApiKey();
+  const credentials = readApiCredentials();
 
   const collector = dependencies.collectMatches ?? defaultCollectMatches;
   const normalize = dependencies.normalize ?? normalizeMatch;
@@ -52,7 +52,7 @@ export async function generateCalendar(
   const generateIcs = dependencies.generateIcs ?? generateCalendarIcs;
   const validateIcs = dependencies.validateIcs ?? validateCalendarIcs;
 
-  const rawMatches = await collector(config, apiKey);
+  const rawMatches = await collector(config, credentials);
   const filtered = rawMatches.filter((raw) =>
     isMatchForTeam(raw, config.team.id),
   );
@@ -77,10 +77,10 @@ export async function generateCalendar(
 
 async function defaultCollectMatches(
   config: AppConfig,
-  apiKey: string,
+  credentials: ApiCredentials,
 ): Promise<RawLaligaMatch[]> {
   const client = new LaligaClient();
-  return client.collectMatches(config, apiKey);
+  return client.collectMatches(config, credentials);
 }
 
 function readRound(raw: RawLaligaMatch): string {

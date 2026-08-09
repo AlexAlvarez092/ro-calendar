@@ -40,6 +40,8 @@ jobs:
       - name: Generate calendar
         env:
           LALIGA_API_KEY: ${{ secrets.LALIGA_API_KEY }}
+          LALIGA_BACKEND_API_KEY: ${{ secrets.LALIGA_BACKEND_API_KEY }}
+          LALIGA_WEBVIEW_API_KEY: ${{ secrets.LALIGA_WEBVIEW_API_KEY }}
         run: npm run generate
 
       - name: Configure Pages
