@@ -9,11 +9,16 @@ import type { RawLaligaMatch } from "../src/api/laliga-types.js";
 const tempDirs: string[] = [];
 
 afterEach(async () => {
-  await Promise.all(tempDirs.map((dir) => rm(dir, { recursive: true, force: true })));
+  await Promise.all(
+    tempDirs.map((dir) => rm(dir, { recursive: true, force: true })),
+  );
   tempDirs.length = 0;
 });
 
-async function setupTempProject(): Promise<{ configPath: string; outputPath: string }> {
+async function setupTempProject(): Promise<{
+  configPath: string;
+  outputPath: string;
+}> {
   const dir = await mkdtemp(join(tmpdir(), "ro-calendar-test-"));
   tempDirs.push(dir);
 
@@ -167,6 +172,8 @@ describe("generation pipeline", () => {
 
     const content = await readFile(outputPath, "utf-8");
     expect(content).toContain("UID:laliga-match-102648@real-oviedo-calendar");
-    expect(content).not.toContain("UID:laliga-match-202000@real-oviedo-calendar");
+    expect(content).not.toContain(
+      "UID:laliga-match-202000@real-oviedo-calendar",
+    );
   });
 });

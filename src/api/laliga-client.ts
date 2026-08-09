@@ -1,5 +1,8 @@
 import type { AppConfig } from "../config/config.js";
-import type { RawLaligaMatch, RawLaligaMatchesResponse } from "./laliga-types.js";
+import type {
+  RawLaligaMatch,
+  RawLaligaMatchesResponse,
+} from "./laliga-types.js";
 
 const GAMEWEEKS_BASE_URL = "https://apim.laliga.com/public-service/api/v1";
 const MATCHES_BASE_URL = "https://apim.laliga.com/webview/api/web";
@@ -17,20 +20,30 @@ export class LaligaClient {
     this.fetchImpl = options.fetchImpl ?? fetch;
   }
 
-  async collectMatches(config: AppConfig, apiKey: string): Promise<RawLaligaMatch[]> {
+  async collectMatches(
+    config: AppConfig,
+    apiKey: string,
+  ): Promise<RawLaligaMatch[]> {
     const weeks = await this.fetchGameweeks(config.competition, apiKey);
 
     const allMatches: RawLaligaMatch[] = [];
 
     for (const week of weeks) {
-      const weekMatches = await this.fetchMatchesByWeek(config.competition, week, apiKey);
+      const weekMatches = await this.fetchMatchesByWeek(
+        config.competition,
+        week,
+        apiKey,
+      );
       allMatches.push(...weekMatches);
     }
 
     return allMatches;
   }
 
-  async fetchGameweeks(competitionSlug: string, apiKey: string): Promise<string[]> {
+  async fetchGameweeks(
+    competitionSlug: string,
+    apiKey: string,
+  ): Promise<string[]> {
     const response = await this.fetchWithKey(
       `${GAMEWEEKS_BASE_URL}/subscriptions/${competitionSlug}/gameweeks?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
       apiKey,
@@ -46,7 +59,11 @@ export class LaligaClient {
     return weeks;
   }
 
-  async fetchMatchesByWeek(competitionSlug: string, week: string, apiKey: string): Promise<RawLaligaMatch[]> {
+  async fetchMatchesByWeek(
+    competitionSlug: string,
+    week: string,
+    apiKey: string,
+  ): Promise<RawLaligaMatch[]> {
     const response = await this.fetchWithKey(
       `${MATCHES_BASE_URL}/subscriptions/${competitionSlug}/week/${encodeURIComponent(week)}/matches?contentLanguage=es&subscription-key=${encodeURIComponent(apiKey)}`,
       apiKey,
@@ -69,7 +86,9 @@ export class LaligaClient {
     });
 
     if (!response.ok) {
-      throw new Error(`LALIGA API request failed with status ${response.status}.`);
+      throw new Error(
+        `LALIGA API request failed with status ${response.status}.`,
+      );
     }
 
     return response;
@@ -102,9 +121,10 @@ function extractWeeks(payload: unknown): string[] {
           return null;
         }
 
-        const mapped = (item as { week?: unknown; id?: unknown; slug?: unknown }).week
-          ?? (item as { id?: unknown }).id
-          ?? (item as { slug?: unknown }).slug;
+        const mapped =
+          (item as { week?: unknown; id?: unknown; slug?: unknown }).week ??
+          (item as { id?: unknown }).id ??
+          (item as { slug?: unknown }).slug;
 
         if (typeof mapped === "string" || typeof mapped === "number") {
           return String(mapped);

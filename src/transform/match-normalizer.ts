@@ -17,7 +17,11 @@ export function hasConfirmedKickoff(raw: RawLaligaMatch): boolean {
   return dt.isValid;
 }
 
-export function normalizeMatch(raw: RawLaligaMatch, round: string, config: AppConfig): Match | null {
+export function normalizeMatch(
+  raw: RawLaligaMatch,
+  round: string,
+  config: AppConfig,
+): Match | null {
   if (!raw.id || !raw.home_team?.id || !raw.away_team?.id) {
     return null;
   }
@@ -35,7 +39,9 @@ export function normalizeMatch(raw: RawLaligaMatch, round: string, config: AppCo
     return null;
   }
 
-  const date = DateTime.fromISO(sourceDate, { setZone: true }).setZone(config.timezone);
+  const date = DateTime.fromISO(sourceDate, { setZone: true }).setZone(
+    config.timezone,
+  );
 
   if (!date.isValid) {
     return null;

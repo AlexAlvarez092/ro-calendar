@@ -7,7 +7,10 @@ interface EventBlock {
   summary: string | null;
 }
 
-export function validateCalendarIcs(ics: string, sourceEvents: CalendarEvent[]): void {
+export function validateCalendarIcs(
+  ics: string,
+  sourceEvents: CalendarEvent[],
+): void {
   if (!ics.includes("BEGIN:VCALENDAR") || !ics.includes("END:VCALENDAR")) {
     throw new Error("ICS document is missing calendar boundaries.");
   }
@@ -49,10 +52,14 @@ export function validateCalendarIcs(ics: string, sourceEvents: CalendarEvent[]):
       }
 
       if (/:[0-9]{8}T/.test(block.dtstart)) {
-        throw new Error(`All-day event contains an invented time: ${block.uid}`);
+        throw new Error(
+          `All-day event contains an invented time: ${block.uid}`,
+        );
       }
     } else if (!/:[0-9]{8}T/.test(block.dtstart)) {
-      throw new Error(`Timed event does not include time component: ${block.uid}`);
+      throw new Error(
+        `Timed event does not include time component: ${block.uid}`,
+      );
     }
   }
 }
@@ -67,7 +74,8 @@ function readEventBlocks(ics: string): EventBlock[] {
     const uid = extractField(lines, "UID:");
     const summary = extractField(lines, "SUMMARY:");
 
-    const dtstartLine = lines.find((line) => line.startsWith("DTSTART")) ?? null;
+    const dtstartLine =
+      lines.find((line) => line.startsWith("DTSTART")) ?? null;
 
     return {
       uid,

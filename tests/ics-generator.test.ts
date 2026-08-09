@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { AppConfig } from "../src/config/config.js";
 import type { Match } from "../src/domain/match.js";
-import { toCalendarEvent, buildEventUid } from "../src/calendar/event-mapper.js";
+import {
+  toCalendarEvent,
+  buildEventUid,
+} from "../src/calendar/event-mapper.js";
 import { generateCalendarIcs } from "../src/calendar/ics-generator.js";
 import { validateCalendarIcs } from "../src/validation/calendar-validator.js";
 
@@ -55,9 +58,15 @@ describe("event mapping and ICS generation", () => {
   it("keeps UID stable when fixture details change", () => {
     const baseUid = buildEventUid(102648);
 
-    const event1 = toCalendarEvent(createMatch({ date: new Date("2026-08-22T15:00:00.000Z") }), config);
+    const event1 = toCalendarEvent(
+      createMatch({ date: new Date("2026-08-22T15:00:00.000Z") }),
+      config,
+    );
     const event2 = toCalendarEvent(
-      createMatch({ date: new Date("2026-08-23T18:00:00.000Z"), venue: "Nuevo Tartiere" }),
+      createMatch({
+        date: new Date("2026-08-23T18:00:00.000Z"),
+        venue: "Nuevo Tartiere",
+      }),
       config,
     );
 

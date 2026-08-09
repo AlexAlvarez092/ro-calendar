@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { normalizeMatch, isMatchForTeam } from "../src/transform/match-normalizer.js";
+import {
+  normalizeMatch,
+  isMatchForTeam,
+} from "../src/transform/match-normalizer.js";
 import type { AppConfig } from "../src/config/config.js";
 import type { RawLaligaMatch } from "../src/api/laliga-types.js";
 
@@ -18,8 +21,18 @@ function baseRaw(): RawLaligaMatch {
     date: "2026-08-22T15:00:00+00:00",
     time: "2026-08-22T15:00:00+00:00",
     status: "PreMatch",
-    home_team: { id: 157, name: "Real Oviedo SAD", nickname: "Real Oviedo", shortname: "OVI" },
-    away_team: { id: 54, name: "CD Leganes", nickname: "CD Leganes", shortname: "LEG" },
+    home_team: {
+      id: 157,
+      name: "Real Oviedo SAD",
+      nickname: "Real Oviedo",
+      shortname: "OVI",
+    },
+    away_team: {
+      id: 54,
+      name: "CD Leganes",
+      nickname: "CD Leganes",
+      shortname: "LEG",
+    },
     venue: { name: "Estadio Carlos Tartiere" },
     subscription: { id: 396, slug: "laliga-hypermotion-2026" },
   };

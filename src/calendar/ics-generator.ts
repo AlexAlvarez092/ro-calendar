@@ -2,7 +2,10 @@ import ical, { ICalCalendar } from "ical-generator";
 import type { AppConfig } from "../config/config.js";
 import type { CalendarEvent } from "../domain/calendar-event.js";
 
-export function generateCalendarIcs(events: CalendarEvent[], config: AppConfig): string {
+export function generateCalendarIcs(
+  events: CalendarEvent[],
+  config: AppConfig,
+): string {
   const calendar: ICalCalendar = ical({
     name: `${config.team.name} Fixtures`,
     timezone: config.timezone,

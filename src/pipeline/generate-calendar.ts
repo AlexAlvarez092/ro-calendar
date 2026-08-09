@@ -9,12 +9,22 @@ import type { CalendarEvent } from "../domain/calendar-event.js";
 import type { Match } from "../domain/match.js";
 import { toCalendarEvent } from "../calendar/event-mapper.js";
 import { generateCalendarIcs } from "../calendar/ics-generator.js";
-import { normalizeMatch, isMatchForTeam } from "../transform/match-normalizer.js";
+import {
+  normalizeMatch,
+  isMatchForTeam,
+} from "../transform/match-normalizer.js";
 import { validateCalendarIcs } from "../validation/calendar-validator.js";
 
 interface PipelineDependencies {
-  collectMatches?: (config: AppConfig, apiKey: string) => Promise<RawLaligaMatch[]>;
-  normalize?: (raw: RawLaligaMatch, round: string, config: AppConfig) => Match | null;
+  collectMatches?: (
+    config: AppConfig,
+    apiKey: string,
+  ) => Promise<RawLaligaMatch[]>;
+  normalize?: (
+    raw: RawLaligaMatch,
+    round: string,
+    config: AppConfig,
+  ) => Match | null;
   mapEvent?: (match: Match, config: AppConfig) => CalendarEvent;
   generateIcs?: (events: CalendarEvent[], config: AppConfig) => string;
   validateIcs?: (ics: string, events: CalendarEvent[]) => void;
@@ -26,7 +36,9 @@ export interface GenerateCalendarOptions {
   dependencies?: PipelineDependencies;
 }
 
-export async function generateCalendar(options: GenerateCalendarOptions = {}): Promise<void> {
+export async function generateCalendar(
+  options: GenerateCalendarOptions = {},
+): Promise<void> {
   const configPath = options.configPath ?? "config/config.json";
   const outputPath = options.outputPath ?? "public/calendar.ics";
   const dependencies = options.dependencies ?? {};
@@ -41,14 +53,18 @@ export async function generateCalendar(options: GenerateCalendarOptions = {}): P
   const validateIcs = dependencies.validateIcs ?? validateCalendarIcs;
 
   const rawMatches = await collector(config, apiKey);
-  const filtered = rawMatches.filter((raw) => isMatchForTeam(raw, config.team.id));
+  const filtered = rawMatches.filter((raw) =>
+    isMatchForTeam(raw, config.team.id),
+  );
 
   const normalized = filtered
     .map((raw) => normalize(raw, readRound(raw), config))
     .filter((match): match is Match => Boolean(match));
 
   if (normalized.length === 0) {
-    throw new Error("No fixtures generated after filtering/normalization. Existing calendar is preserved.");
+    throw new Error(
+      "No fixtures generated after filtering/normalization. Existing calendar is preserved.",
+    );
   }
 
   const events = normalized.map((match) => mapEvent(match, config));
@@ -59,7 +75,10 @@ export async function generateCalendar(options: GenerateCalendarOptions = {}): P
   await writeSafely(outputPath, ics);
 }
 
-async function defaultCollectMatches(config: AppConfig, apiKey: string): Promise<RawLaligaMatch[]> {
+async function defaultCollectMatches(
+  config: AppConfig,
+  apiKey: string,
+): Promise<RawLaligaMatch[]> {
   const client = new LaligaClient();
   return client.collectMatches(config, apiKey);
 }
