@@ -79,3 +79,9 @@ Timezone:
 - Publishing strategy: use GitHub Pages with the official Pages workflow (`actions/upload-pages-artifact` + `actions/deploy-pages`) from a generated artifact, to avoid committing generated files on every run.
 - ICS generation library choice for MVP: use a dedicated npm ICS generator with timezone/all-day support and keep validation as a separate explicit step.
 - ICS validation strategy for MVP: combine structural checks (required fields, duplicate UIDs, all-day rules) with strict parse validation before publish.
+
+## Delivery workflow
+
+- The coding agent should work autonomously by default and only stop for missing product decisions, credentials, or explicit user approval gates.
+- Use small, frequent commits with clear intent, instead of large batches at the end.
+- Prefer one logical change per commit (for example: config, API client, normalization, ICS mapping, validation, tests, CI).
