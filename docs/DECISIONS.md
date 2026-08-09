@@ -26,6 +26,7 @@ This file records the decisions made during project discovery.
 ## Event data
 
 Required:
+
 - title
 - date
 - time when confirmed
@@ -70,3 +71,11 @@ Timezone:
 
 - Match results are a nice-to-have, not MVP.
 - Season configuration is changed manually at the end of the season.
+
+## Decisions closed on 2026-08-09
+
+- Unconfirmed kick-off time must be represented as a true all-day event (birthday-style), not as an invented midnight time.
+- If generation would produce zero fixtures and no previous `public/calendar.ics` exists yet, the run should fail closed and not create a new empty calendar file.
+- Publishing strategy: use GitHub Pages with the official Pages workflow (`actions/upload-pages-artifact` + `actions/deploy-pages`) from a generated artifact, to avoid committing generated files on every run.
+- ICS generation library choice for MVP: use a dedicated npm ICS generator with timezone/all-day support and keep validation as a separate explicit step.
+- ICS validation strategy for MVP: combine structural checks (required fields, duplicate UIDs, all-day rules) with strict parse validation before publish.
