@@ -60,6 +60,13 @@ Set the API key as an environment variable:
 LALIGA_API_KEY=...
 ```
 
+Recommended local setup:
+
+```bash
+cp .env.example .env
+# then edit .env and set LALIGA_API_KEY
+```
+
 Run tests:
 
 ```bash
@@ -85,6 +92,12 @@ GitHub Actions runs hourly and can also be triggered manually.
 The API key is stored as a GitHub Actions Secret.
 
 The generated `calendar.ics` is published through GitHub Pages.
+
+Required GitHub setup:
+
+1. Create a repository secret named `LALIGA_API_KEY`.
+2. Enable GitHub Pages for this repository (source: GitHub Actions).
+3. Ensure the workflow in `.github/workflows/update-calendar.yml` is enabled.
 
 ## Subscription
 
