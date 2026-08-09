@@ -270,9 +270,32 @@ A local environment variable should provide the API key:
 LALIGA_API_KEY=...
 ```
 
+Implementation note (current behaviour):
+
+- `LALIGA_API_KEY` is treated as a legacy/shared fallback value.
+- `LALIGA_BACKEND_API_KEY` and `LALIGA_WEBVIEW_API_KEY` are supported for split-key scenarios.
+- If explicit keys are not provided, the implementation may discover runtime API subscriptions from LALIGA public pages.
+- If `LALIGA_API_KEY` is provided but returns `401`, the implementation may retry with dynamic discovery.
+
 Never put the actual key in source control.
 
-## 17. Result handling
+CI secret names should therefore support either strategy:
+
+```text
+LALIGA_API_KEY
+LALIGA_BACKEND_API_KEY
+LALIGA_WEBVIEW_API_KEY
+```
+
+## 17. Deployment prerequisites
+
+For GitHub Pages publication via Actions:
+
+- Repository Pages must be enabled.
+- Build and deploy should run from GitHub Actions.
+- The hourly/manual workflow should publish from the generated artifact.
+
+## 18. Result handling
 
 Not implemented in MVP.
 

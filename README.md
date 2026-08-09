@@ -1,130 +1,89 @@
 # Real Oviedo Calendar
 
-A free, automatically updated ICS calendar for Real Oviedo fixtures from LALIGA HYPERMOTION.
+## Espanol
 
-The calendar is designed to work with:
+### Que es
+
+Real Oviedo Calendar es un calendario publico de partidos de Real Oviedo en formato ICS.
+
+Se actualiza automaticamente y esta pensado para que cualquier persona pueda suscribirse desde su app de calendario favorita.
+
+### Que hace
+
+- Publica los partidos de Real Oviedo de LALIGA HYPERMOTION.
+- Refleja cambios de fecha, hora o estadio cuando aparecen en la fuente oficial.
+- Elimina partidos que ya no aparecen en la fuente.
+- Usa eventos de dia completo cuando el horario de un partido no esta confirmado.
+
+### Que no hace
+
+- No muestra resultados de partidos en esta version.
+- No requiere registro ni cuenta.
+- No tiene app propia: funciona a traves de tu calendario habitual.
+
+### Como usarlo
+
+1. Copia esta URL de suscripcion:
+   https://alexalvarez092.github.io/ro-calendar/calendar.ics
+2. Abre tu aplicacion de calendario.
+3. Anade un calendario por URL / suscripcion ICS.
+4. Pega la URL y confirma la suscripcion.
+
+### Compatibilidad
+
+Funciona con clientes que soportan suscripciones ICS, por ejemplo:
 
 - Apple Calendar
 - Google Calendar
-- Android calendar clients supporting ICS subscriptions
+- Clientes de calendario en Android
 
-## How it works
+### Nota importante
 
-```text
-LALIGA API
-    ↓
-GitHub Actions (hourly)
-    ↓
-Fetch + filter Real Oviedo fixtures
-    ↓
-Generate + validate calendar.ics
-    ↓
-GitHub Pages
-    ↓
-Public ICS subscription URL
-```
+La frecuencia de actualizacion visible en tu movil o ordenador depende tambien de cada app de calendario.
 
-There is no database, backend server, or user account.
+---
 
-## MVP
+## English
 
-The initial version supports:
+### What it is
 
-- Real Oviedo
-- LALIGA HYPERMOTION 2026/27
-- regular fixtures and playoff fixtures exposed by the competition
-- date/time updates
-- venue updates
-- fixture additions/removals
-- all-day events when the schedule is not confirmed
-- Europe/Madrid timezone
+Real Oviedo Calendar is a public ICS fixture calendar for Real Oviedo.
 
-Match results are intentionally not implemented in MVP.
+It updates automatically so anyone can subscribe from their preferred calendar app.
 
-## Local setup
+### What it does
 
-Requirements:
+- Publishes Real Oviedo fixtures from LALIGA HYPERMOTION.
+- Reflects date, time, or venue changes when they appear in the official source.
+- Removes fixtures that disappear from the source.
+- Uses all-day events when kickoff time is not confirmed.
 
-- Node.js
-- npm
+### What it does not do
 
-Install:
+- It does not include match results in this version.
+- It does not require user accounts.
+- It is not a standalone app: it works through your existing calendar client.
 
-```bash
-npm install
-```
+### How to use it
 
-Set API credentials as environment variables (optional):
+1. Copy this subscription URL:
+   https://alexalvarez092.github.io/ro-calendar/calendar.ics
+2. Open your calendar app.
+3. Add a calendar by URL / ICS subscription.
+4. Paste the URL and confirm.
 
-```text
-LALIGA_API_KEY=...
-LALIGA_BACKEND_API_KEY=...
-LALIGA_WEBVIEW_API_KEY=...
-```
+### Compatibility
 
-Notes:
+Works with calendar clients that support ICS subscriptions, such as:
 
-- `LALIGA_API_KEY` is a legacy/shared fallback.
-- `LALIGA_BACKEND_API_KEY` and `LALIGA_WEBVIEW_API_KEY` can be used when LALIGA uses different keys per endpoint.
-- If none are set, the generator attempts dynamic discovery from LALIGA runtime config.
-- If `LALIGA_API_KEY` is set but returns `401`, the generator retries with dynamic discovery.
+- Apple Calendar
+- Google Calendar
+- Android calendar clients
 
-Recommended local setup:
+### Important note
 
-```bash
-cp .env.example .env
-# then edit .env and set optional key variables
-```
+How often updates appear on your device also depends on each calendar client.
 
-Run tests:
+---
 
-```bash
-npm test
-```
-
-Generate locally:
-
-```bash
-npm run generate
-```
-
-Build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-GitHub Actions runs hourly and can also be triggered manually.
-
-The API key is stored as a GitHub Actions Secret.
-
-The generated `calendar.ics` is published through GitHub Pages.
-
-Required GitHub setup:
-
-1. Create repository secrets as needed (`LALIGA_API_KEY`, or `LALIGA_BACKEND_API_KEY` + `LALIGA_WEBVIEW_API_KEY`).
-2. Enable GitHub Pages for this repository (source: GitHub Actions).
-3. Ensure the workflow in `.github/workflows/update-calendar.yml` is enabled.
-
-## Subscription
-
-Once GitHub Pages is enabled, the public calendar URL can be subscribed to from Apple Calendar or Google Calendar.
-
-The URL should remain stable across seasons.
-
-## Project documentation
-
-- `docs/PRD.md` — product requirements
-- `docs/ARCHITECTURE.md` — architecture and system design
-- `docs/TECHNICAL_SPEC.md` — implementation details
-- `docs/DATA_SOURCE.md` — LALIGA API discovery and assumptions
-- `.github/copilot-instructions.md` — implementation guidance for GitHub Copilot
-- `docs/DECISIONS.md` — agreed decisions
-
-## Important dependency
-
-The project depends on the public LALIGA web API and its API access mechanism.
-
-LALIGA can change endpoints, response structures, or API credentials without notice.
+For product, architecture, and technical documentation, see the files under `docs/`.
