@@ -60,7 +60,6 @@ export class LaligaClient {
     config: AppConfig,
     resolved: ResolvedApiCredentials,
   ): Promise<RawLaligaMatch[]> {
-
     const weeks = await this.fetchGameweeks(
       config.competition,
       resolved.backendApiKey,
@@ -156,8 +155,10 @@ export class LaligaClient {
     const discovered = await this.discoverRuntimeApiConfig();
 
     return {
-      backendApiKey: credentials.backendApiKey ?? discovered.backendSubscription,
-      webviewApiKey: credentials.webviewApiKey ?? discovered.webviewSubscription,
+      backendApiKey:
+        credentials.backendApiKey ?? discovered.backendSubscription,
+      webviewApiKey:
+        credentials.webviewApiKey ?? discovered.webviewSubscription,
       backendBaseUrl: discovered.backendUrl || DEFAULT_BACKEND_BASE_URL,
       webviewBaseUrl: discovered.webviewUrl || DEFAULT_WEBVIEW_BASE_URL,
     };

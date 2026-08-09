@@ -17,7 +17,10 @@ describe("LaligaClient dynamic credentials", () => {
     const fetchImpl: typeof fetch = async (input, init) => {
       const url = String(input);
 
-      if (url === "https://www.laliga.com/" || url === "https://www.laliga.com/resultados") {
+      if (
+        url === "https://www.laliga.com/" ||
+        url === "https://www.laliga.com/resultados"
+      ) {
         const html =
           '"backendUrl":"https://apim.laliga.com/public-service","backendSubscription":"backend123","webviewUrl":"https://apim.laliga.com/webview","webviewSubscription":"webview456"';
         return new Response(html, { status: 200 });
@@ -31,7 +34,9 @@ describe("LaligaClient dynamic credentials", () => {
       calls.push({ url, key });
 
       if (url.includes("/gameweeks")) {
-        return new Response(JSON.stringify({ gameweeks: [2] }), { status: 200 });
+        return new Response(JSON.stringify({ gameweeks: [2] }), {
+          status: 200,
+        });
       }
 
       return new Response(JSON.stringify({ matches: [] }), { status: 200 });
@@ -42,7 +47,9 @@ describe("LaligaClient dynamic credentials", () => {
 
     expect(calls).toHaveLength(2);
 
-    expect(calls[0]?.url).toContain("https://apim.laliga.com/public-service/api/v1/");
+    expect(calls[0]?.url).toContain(
+      "https://apim.laliga.com/public-service/api/v1/",
+    );
     expect(calls[0]?.key).toBe("backend123");
 
     expect(calls[1]?.url).toContain("https://apim.laliga.com/webview/api/web/");
@@ -55,8 +62,13 @@ describe("LaligaClient dynamic credentials", () => {
     const fetchImpl: typeof fetch = async (input, init) => {
       const url = String(input);
 
-      if (url === "https://www.laliga.com/" || url === "https://www.laliga.com/resultados") {
-        throw new Error("Runtime discovery should not run when both keys are provided.");
+      if (
+        url === "https://www.laliga.com/" ||
+        url === "https://www.laliga.com/resultados"
+      ) {
+        throw new Error(
+          "Runtime discovery should not run when both keys are provided.",
+        );
       }
 
       const key =
@@ -67,7 +79,9 @@ describe("LaligaClient dynamic credentials", () => {
       calls.push({ url, key });
 
       if (url.includes("/gameweeks")) {
-        return new Response(JSON.stringify({ gameweeks: [2] }), { status: 200 });
+        return new Response(JSON.stringify({ gameweeks: [2] }), {
+          status: 200,
+        });
       }
 
       return new Response(JSON.stringify({ matches: [] }), { status: 200 });
@@ -91,7 +105,10 @@ describe("LaligaClient dynamic credentials", () => {
     const fetchImpl: typeof fetch = async (input, init) => {
       const url = String(input);
 
-      if (url === "https://www.laliga.com/" || url === "https://www.laliga.com/resultados") {
+      if (
+        url === "https://www.laliga.com/" ||
+        url === "https://www.laliga.com/resultados"
+      ) {
         const html =
           '"backendUrl":"https://apim.laliga.com/public-service","backendSubscription":"backend123","webviewUrl":"https://apim.laliga.com/webview","webviewSubscription":"webview456"';
         return new Response(html, { status: 200 });
@@ -104,13 +121,19 @@ describe("LaligaClient dynamic credentials", () => {
 
       calls.push({ url, key });
 
-      if (url.includes("/gameweeks") && key === "stale-shared" && !attemptedWithShared) {
+      if (
+        url.includes("/gameweeks") &&
+        key === "stale-shared" &&
+        !attemptedWithShared
+      ) {
         attemptedWithShared = true;
         return new Response("", { status: 401 });
       }
 
       if (url.includes("/gameweeks")) {
-        return new Response(JSON.stringify({ gameweeks: [2] }), { status: 200 });
+        return new Response(JSON.stringify({ gameweeks: [2] }), {
+          status: 200,
+        });
       }
 
       return new Response(JSON.stringify({ matches: [] }), { status: 200 });
