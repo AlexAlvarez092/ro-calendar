@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+coverage/
+
+# Local environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# OS/editor noise
+.DS_Store
