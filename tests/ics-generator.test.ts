@@ -40,9 +40,14 @@ describe("event mapping and ICS generation", () => {
     expect(event.location).toBe("Estadio Carlos Tartiere");
     expect(event.description).toBe("Jornada 2");
     expect(event.allDay).toBe(false);
+    expect(event.end).toBeDefined();
+    expect(event.end!.getTime() - event.start.getTime()).toBe(
+      2 * 60 * 60 * 1000,
+    );
 
     validateCalendarIcs(ics, [event]);
     expect(ics).toContain("TZID=Europe/Madrid");
+    expect(ics).toContain("DTEND");
   });
 
   it("creates birthday-style all-day event when time is unconfirmed", () => {
@@ -51,6 +56,7 @@ describe("event mapping and ICS generation", () => {
     const ics = generateCalendarIcs([event], config);
 
     expect(event.allDay).toBe(true);
+    expect(event.end).toBeUndefined();
     validateCalendarIcs(ics, [event]);
     expect(ics).toContain("DTSTART;VALUE=DATE");
   });

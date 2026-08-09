@@ -19,6 +19,7 @@ export function generateCalendarIcs(
     calendar.createEvent({
       id: event.uid,
       start: event.start,
+      end: event.end,
       allDay: event.allDay,
       summary: event.title,
       location: event.location,

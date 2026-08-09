@@ -18,11 +18,15 @@ export function toCalendarEvent(
   const start = match.hasConfirmedTime
     ? local.toJSDate()
     : local.startOf("day").toJSDate();
+  const end = match.hasConfirmedTime
+    ? local.plus({ hours: 2 }).toJSDate()
+    : undefined;
 
   return {
     uid: buildEventUid(match.id),
     title: `${homeDisplay} - ${awayDisplay}`,
     start,
+    end,
     allDay: !match.hasConfirmedTime,
     location: match.venue ?? undefined,
     description: `Jornada ${match.round}`,

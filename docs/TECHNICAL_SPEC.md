@@ -120,7 +120,8 @@ For an all-day fixture:
 For a timed fixture:
 
 - convert the source timestamp correctly;
-- use `Europe/Madrid`.
+- use `Europe/Madrid`;
+- set the event end time to two hours after kickoff so the calendar reserves that slot.
 
 ## 7. Event title
 
