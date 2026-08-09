@@ -302,4 +302,4 @@ Not implemented in MVP.
 
 Do not design the current domain model around scores.
 
-Future versions may add result/score fields without changing the event identity model.
+Any extension in this area must preserve the current stable event identity model.

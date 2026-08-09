@@ -121,7 +121,7 @@ No application server is required.
 - Professional monitoring/alerting
 - Paid hosting
 
-Match results are a future enhancement only.
+Potential post-MVP enhancements are tracked as GitHub Issues.
 
 ## 11. Acceptance criteria
 

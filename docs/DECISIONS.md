@@ -67,10 +67,7 @@ Timezone:
 - API key is supplied externally through secrets/environment.
 - Never commit the key.
 
-## Future
-
-- Match results are a nice-to-have, not MVP.
-- Season configuration is changed manually at the end of the season.
+Future enhancements backlog is tracked in GitHub Issues.
 
 ## Decisions closed on 2026-08-09
 
