@@ -1,4 +1,5 @@
 import ical, { ICalCalendar } from "ical-generator";
+import { DateTime } from "luxon";
 import type { AppConfig } from "../config/config.js";
 import type { CalendarEvent } from "../domain/calendar-event.js";
 
@@ -16,10 +17,19 @@ export function generateCalendarIcs(
   });
 
   for (const event of events) {
+    // ical-generator reads plain Date objects using the host process's local
+    // timezone getters when a `timezone` is set, instead of converting to it.
+    // Passing zoned Luxon DateTime values keeps the correct local time
+    // regardless of the timezone the pipeline actually runs in.
+    const start = toZonedDateTime(event.start, config.timezone);
+    const end = event.end
+      ? toZonedDateTime(event.end, config.timezone)
+      : undefined;
+
     calendar.createEvent({
       id: event.uid,
-      start: event.start,
-      end: event.end,
+      start,
+      end,
       allDay: event.allDay,
       summary: event.title,
       location: event.location,
@@ -29,4 +39,8 @@ export function generateCalendarIcs(
   }
 
   return calendar.toString();
+}
+
+function toZonedDateTime(date: Date, timezone: string): DateTime {
+  return DateTime.fromJSDate(date).setZone(timezone);
 }
