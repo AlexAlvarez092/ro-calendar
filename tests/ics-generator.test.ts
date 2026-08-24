@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { AppConfig } from "../src/config/config.js";
 import type { Match } from "../src/domain/match.js";
 import {
@@ -80,5 +80,29 @@ describe("event mapping and ICS generation", () => {
     expect(event2.uid).toBe(baseUid);
     expect(event1.start.getTime()).not.toBe(event2.start.getTime());
     expect(event1.location).not.toBe(event2.location);
+  });
+
+  describe("timezone conversion regardless of host process timezone", () => {
+    const originalTz = process.env.TZ;
+
+    beforeEach(() => {
+      // The kickoff bug only surfaces when the process timezone differs
+      // from the target TZID (e.g. GitHub Actions runners run in UTC).
+      process.env.TZ = "UTC";
+    });
+
+    afterEach(() => {
+      process.env.TZ = originalTz;
+    });
+
+    it("renders the correct Europe/Madrid local kickoff time (CEST, UTC+2)", () => {
+      // 2026-08-22T15:00:00Z is 17:00 in Madrid during CEST (summer).
+      const match = createMatch({ date: new Date("2026-08-22T15:00:00Z") });
+      const event = toCalendarEvent(match, config);
+      const ics = generateCalendarIcs([event], config);
+
+      expect(ics).toContain("DTSTART;TZID=Europe/Madrid:20260822T170000");
+      expect(ics).toContain("DTEND;TZID=Europe/Madrid:20260822T190000");
+    });
   });
 });
